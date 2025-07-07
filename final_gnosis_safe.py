@@ -155,12 +155,11 @@ def create_csv_download(results):
     csv = df.to_csv(index=False)
     b64 = base64.b64encode(csv.encode()).decode()
     return b64
-
-# Streamlit app interface
+    
 st.title("Gnosis Safe Owners Lookup")
 st.write("Enter Gnosis Safe addresses (one per line or comma-separated) to retrieve owners, threshold, and signers.")
 
-# Input section
+# UI input options
 with st.container():
     network = st.selectbox("Network", options=["mainnet", "gnosis"], index=0, help="Network where the Safe is deployed. Mainnet means EVM.")
     date_range = st.date_input(
@@ -211,7 +210,6 @@ if st.button("Run"):
                             error = active_error
                     results.append((address, network, owners, threshold, active_signers, previous_signers, error))
                 
-                # Display results
                 st.subheader("Results")
                 for address, network, owners, threshold, active_signers, previous_signers, error in results:
                     with st.container():
@@ -258,6 +256,6 @@ if st.button("Run"):
                 if results:
                     b64 = create_csv_download(results)
                     st.markdown(
-                        f'<a href="data:file/csv;base64,{b64}" download="gnosis_safe_details.csv">Download Results as CSV</a>',
+                        f'<a href="data:file/csv;base64,{b64}" download="gnosis_safe_details.csv">Download CSV</a>',
                         unsafe_allow_html=True
                     )
