@@ -85,7 +85,7 @@ def get_active_and_previous_signers(safe_address, network="mainnet", start_date=
             else:
                 error_msg = f"error: {response.status_code}; {response.text}"
                 if response.status_code == 422:
-                    error_msg += " (Checksummed address needed, e.g., 0x80D63b12aecF8aE5884cBF1d3536bb0C5f612CfC. No fully capitalized or small letters!)"
+                    error_msg += " (No fully capitalized or small letters! Checksummed address needed, eg 0x80D63b12aecF8aE5884cBF1d3536bb0C5f612CfC)"
                 return None, None, error_msg
     except requests.Timeout:
         return None, None, "Timed out."
