@@ -164,7 +164,7 @@ with st.container():
     network = st.selectbox("Network", options=["mainnet", "gnosis"], index=0, help="Network where the Safe is deployed. Mainnet means EVM.")
     date_range = st.date_input(
         "Transaction Date Range",
-        value=(datetime(2025, 6, 1), datetime.now()),
+        value=(datetime(2023, 1, 1), datetime.now()),
         min_value=datetime(2015, 1, 1),
         max_value=datetime.now(),
         help="Date range for signer activity."
@@ -174,7 +174,7 @@ with st.container():
     end_date = datetime.combine(end_date, time(23, 59, 59)).replace(tzinfo=pytz.UTC)
     addresses_input = st.text_area(
         "Safe Addresses",
-        placeholder="e.g., 0x80D63b12aecF8aE5884cBF1d3536bb0C5f612CfC\n0x4971DD016127F390a3EF6b956Ff944d0E2e1e462",
+        placeholder="eg, 0x80D63b12aecF8aE5884cBF1d3536bb0C5f612CfC\n0x4971DD016127F390a3EF6b956Ff944d0E2e1e462",
         height=100
     )
 
@@ -182,7 +182,7 @@ if st.button("Run"):
     if not addresses_input:
         st.error("Need at least one Gnosis Safe address")
     else:
-        with st.spinner("Fetching data..."):
+        with st.spinner("Fetching data (may take awhile if multisig has many txns)..."):
             addresses = []
             for addr in addresses_input.replace(',', '\n').split('\n'):
                 addr = addr.strip()
@@ -211,6 +211,17 @@ if st.button("Run"):
                     results.append((address, network, owners, threshold, active_signers, previous_signers, error))
                 
                 st.subheader("Results")
+                
+                # CSV download link at the top
+                if results:
+                    b64 = create_csv_download(results)
+                    st.markdown(
+                        f'<a href="data:file/csv;base64,{b64}" download="gnosis_safe_details.csv">Download CSV</a>',
+                        unsafe_allow_html=True
+                    )
+                    st.markdown("---")  # Separator for clarity
+                
+                # Display individual Safe details
                 for address, network, owners, threshold, active_signers, previous_signers, error in results:
                     with st.container():
                         if error:
@@ -252,10 +263,3 @@ if st.button("Run"):
                             else:
                                 st.markdown("**Date range**: No txn data available")
                             st.dataframe(df_owners, use_container_width=True)
-                
-                if results:
-                    b64 = create_csv_download(results)
-                    st.markdown(
-                        f'<a href="data:file/csv;base64,{b64}" download="gnosis_safe_details.csv">Download CSV</a>',
-                        unsafe_allow_html=True
-                    )
